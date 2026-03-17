@@ -67,6 +67,8 @@ import { IRequestLogger } from '../../../platform/requestLogger/node/requestLogg
 import { IScopeSelector } from '../../../platform/scopeSelection/common/scopeSelection';
 import { ScopeSelectorImpl } from '../../../platform/scopeSelection/vscode-node/scopeSelectionImpl';
 import { ISearchService } from '../../../platform/search/common/searchService';
+import { ISqliteService } from '../../../platform/sqlite/common/sqliteService';
+import { SqliteService } from '../../../platform/sqlite/node/sqliteService';
 import { SearchServiceImpl } from '../../../platform/search/vscode-node/searchServiceImpl';
 import { ISettingsEditorSearchService } from '../../../platform/settingsEditor/common/settingsEditorSearchService';
 import { IExperimentationService, NullExperimentationService } from '../../../platform/telemetry/common/nullExperimentationService';
@@ -202,6 +204,7 @@ export function registerServices(builder: IInstantiationServiceBuilder, extensio
 	builder.define(IParserService, new SyncDescriptor(ParserServiceImpl, [/*useWorker*/ true]));
 	builder.define(IIntentService, new SyncDescriptor(IntentService));
 	builder.define(INaiveChunkingService, new SyncDescriptor(NaiveChunkingService));
+	builder.define(ISqliteService, new SyncDescriptor(SqliteService));
 	builder.define(IWorkspaceFileIndex, new SyncDescriptor(WorkspaceFileIndex));
 	builder.define(IChunkingEndpointClient, new SyncDescriptor(ChunkingEndpointClientImpl));
 	builder.define(ICommandService, new SyncDescriptor(CommandServiceImpl));

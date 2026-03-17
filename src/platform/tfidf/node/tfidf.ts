@@ -6,10 +6,6 @@
 import fs from 'fs';
 import type sql from 'node:sqlite';
 import path from 'path';
-
-function loadSqlite(): typeof import('node:sqlite') {
-	return require('node:sqlite');
-}
 import { GlobIncludeOptions, shouldInclude } from '../../../util/common/glob';
 import { Limiter } from '../../../util/vs/base/common/async';
 import { Iterable } from '../../../util/vs/base/common/iterator';
@@ -18,6 +14,10 @@ import { Schemas } from '../../../util/vs/base/common/network';
 import { URI } from '../../../util/vs/base/common/uri';
 import { Range } from '../../../util/vs/editor/common/core/range';
 import { FileChunk } from '../../chunking/common/chunk';
+
+function loadSqlite(): typeof import('node:sqlite') {
+	return require('node:sqlite');
+}
 
 type SparseEmbedding = Map</* word */ string, /* weight */number>;
 type TermFrequencies = Record</* word */ string, /*occurrences*/ number>;

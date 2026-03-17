@@ -81,6 +81,8 @@ import { IScopeSelector } from '../../scopeSelection/common/scopeSelection';
 import { ISearchService } from '../../search/common/searchService';
 import { ISimulationTestContext, NulSimulationTestContext } from '../../simulationTestContext/common/simulationTestContext';
 import { ISnippyService, NullSnippyService } from '../../snippy/common/snippyService';
+import { ISqliteService } from '../../sqlite/common/sqliteService';
+import { SqliteService } from '../../sqlite/node/sqliteService';
 import { ISurveyService, NullSurveyService } from '../../survey/common/surveyService';
 import { ITabsAndEditorsService } from '../../tabs/common/tabsAndEditorsService';
 import { ITasksService } from '../../tasks/common/tasksService';
@@ -293,6 +295,7 @@ export function createPlatformServices(disposables: Pick<DisposableStore, 'add'>
 	}));
 
 	testingServiceCollection.define(ITasksService, new SyncDescriptor(TestTasksService));
+	testingServiceCollection.define(ISqliteService, new SyncDescriptor(SqliteService));
 
 	return testingServiceCollection;
 }

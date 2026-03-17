@@ -8,10 +8,6 @@ import * as l10n from '@vscode/l10n';
 import * as fs from 'node:fs';
 import type sql from 'node:sqlite';
 import { Result } from '../../../../util/common/result';
-
-function loadSqlite(): typeof import('node:sqlite') {
-	return require('node:sqlite');
-}
 import { CallTracker } from '../../../../util/common/telemetryCorrelationId';
 import { CancelablePromise, createCancelablePromise, Limiter, raceCancellationError } from '../../../../util/vs/base/common/async';
 import { CancellationToken } from '../../../../util/vs/base/common/cancellation';
@@ -32,6 +28,7 @@ import { IFileSystemService } from '../../../filesystem/common/fileSystemService
 import { RelativePattern } from '../../../filesystem/common/fileTypes';
 import { IIgnoreService } from '../../../ignore/common/ignoreService';
 import { ILogService } from '../../../log/common/logService';
+import { ISqliteService } from '../../../sqlite/common/sqliteService';
 import { ISearchService } from '../../../search/common/searchService';
 import { ITelemetryService } from '../../../telemetry/common/telemetry';
 import { IWorkspaceService } from '../../../workspace/common/workspaceService';
@@ -139,6 +136,7 @@ export class ExternalIngestIndex extends Disposable {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@ILogService private readonly _logService: ILogService,
 		@ISearchService private readonly _searchService: ISearchService,
+		@ISqliteService private readonly _sqliteService: ISqliteService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
 		@IVSCodeExtensionContext private readonly _vsExtensionContext: IVSCodeExtensionContext,
 		@IWorkspaceService private readonly _workspaceService: IWorkspaceService,
@@ -437,7 +435,7 @@ export class ExternalIngestIndex extends Disposable {
 		// Try to open existing database and check cache version
 		if (fs.existsSync(dbPath)) {
 			try {
-				const db = new (loadSqlite().DatabaseSync)(dbPath, {
+				const db = this._sqliteService.createDatabase(dbPath, {
 					open: true,
 					enableForeignKeyConstraints: true,
 				});
@@ -481,7 +479,7 @@ export class ExternalIngestIndex extends Disposable {
 	private createFreshDatabase(dbPath: string | ':memory:'): sql.DatabaseSync {
 		this._logService.trace(`ExternalIngestIndex: Creating fresh database at path: ${dbPath}`);
 
-		const db = new (loadSqlite().DatabaseSync)(dbPath, {
+		const db = this._sqliteService.createDatabase(dbPath, {
 			open: true,
 			enableForeignKeyConstraints: true,
 		});

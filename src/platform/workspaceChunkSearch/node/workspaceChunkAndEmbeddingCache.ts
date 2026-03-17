@@ -6,10 +6,6 @@ import fs from 'fs';
 import { IDisposable } from 'monaco-editor';
 import type sql from 'node:sqlite';
 import path from 'path';
-
-function loadSqlite(): typeof import('node:sqlite') {
-	return require('node:sqlite');
-}
 import { CancelablePromise, createCancelablePromise, raceCancellationError } from '../../../util/vs/base/common/async';
 import { CancellationToken } from '../../../util/vs/base/common/cancellation';
 import { isCancellationError } from '../../../util/vs/base/common/errors';
@@ -23,6 +19,7 @@ import { EmbeddingType } from '../../embeddings/common/embeddingsComputer';
 import { packEmbedding, unpackEmbedding } from '../../embeddings/common/embeddingsStorage';
 import { IFileSystemService } from '../../filesystem/common/fileSystemService';
 import { ILogService } from '../../log/common/logService';
+import { ISqliteService } from '../../sqlite/common/sqliteService';
 import { FileRepresentation, IWorkspaceFileIndex } from './workspaceFileIndex';
 
 type CacheEntry = {
@@ -100,8 +97,8 @@ class DbCache implements IWorkspaceChunkAndEmbeddingCache {
 	): Promise<DbCache> {
 		const instantiationService = accessor.get(IInstantiationService);
 		const logService = accessor.get(ILogService);
+		const sqliteService = accessor.get(ISqliteService);
 
-		const sqliteModule = loadSqlite();
 		const syncOptions: sql.DatabaseSyncOptions = {
 			open: true,
 			enableForeignKeyConstraints: true
@@ -112,7 +109,7 @@ class DbCache implements IWorkspaceChunkAndEmbeddingCache {
 			const dbPath = URI.joinPath(cacheRoot, `workspace-chunks.db`);
 			try {
 				await raceCancellationError(fs.promises.mkdir(path.dirname(dbPath.fsPath), { recursive: true }), token);
-				db = new sqliteModule.DatabaseSync(dbPath.fsPath, syncOptions);
+				db = sqliteService.createDatabase(dbPath.fsPath, syncOptions);
 				logService.trace(`DbWorkspaceChunkAndEmbeddingCache: Opened SQLite database on disk at ${dbPath.fsPath}`);
 			} catch (e) {
 				if (isCancellationError(e)) {
@@ -123,7 +120,7 @@ class DbCache implements IWorkspaceChunkAndEmbeddingCache {
 		}
 
 		if (!db) {
-			db = new sqliteModule.DatabaseSync(':memory:', syncOptions);
+			db = sqliteService.createDatabase(':memory:', syncOptions);
 			logService.trace(`DbWorkspaceChunkAndEmbeddingCache: Using in memory database`);
 		}
 
