@@ -6,8 +6,12 @@
 import ingestUtils = require('@github/blackbird-external-ingest-utils');
 import * as l10n from '@vscode/l10n';
 import * as fs from 'node:fs';
-import sql from 'node:sqlite';
+import type sql from 'node:sqlite';
 import { Result } from '../../../../util/common/result';
+
+function loadSqlite(): typeof import('node:sqlite') {
+	return require('node:sqlite');
+}
 import { CallTracker } from '../../../../util/common/telemetryCorrelationId';
 import { CancelablePromise, createCancelablePromise, Limiter, raceCancellationError } from '../../../../util/vs/base/common/async';
 import { CancellationToken } from '../../../../util/vs/base/common/cancellation';
@@ -433,7 +437,7 @@ export class ExternalIngestIndex extends Disposable {
 		// Try to open existing database and check cache version
 		if (fs.existsSync(dbPath)) {
 			try {
-				const db = new sql.DatabaseSync(dbPath, {
+				const db = new (loadSqlite().DatabaseSync)(dbPath, {
 					open: true,
 					enableForeignKeyConstraints: true,
 				});
@@ -477,7 +481,7 @@ export class ExternalIngestIndex extends Disposable {
 	private createFreshDatabase(dbPath: string | ':memory:'): sql.DatabaseSync {
 		this._logService.trace(`ExternalIngestIndex: Creating fresh database at path: ${dbPath}`);
 
-		const db = new sql.DatabaseSync(dbPath, {
+		const db = new (loadSqlite().DatabaseSync)(dbPath, {
 			open: true,
 			enableForeignKeyConstraints: true,
 		});
