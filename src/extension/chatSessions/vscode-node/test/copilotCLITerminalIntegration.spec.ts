@@ -187,6 +187,7 @@ describe('CopilotCLITerminalIntegration', () => {
 			{ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), createSubLogger: () => ({}) } as unknown as ILogService,
 			telemetryService as unknown as ITelemetryService,
 			{ getConfig: () => true } as unknown as IConfigurationService,
+			{ config: { enabled: false } } as any,
 		);
 		disposables.add(integration);
 
@@ -259,6 +260,7 @@ describe('CopilotCLITerminalIntegration', () => {
 				{ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), createSubLogger: () => ({}) } as unknown as ILogService,
 				telemetryService as unknown as ITelemetryService,
 				{ getConfig: () => true } as unknown as IConfigurationService,
+				{ config: { enabled: false } } as any,
 			);
 			disposables.add(freshIntegration);
 			await (freshIntegration as any).initialization;
@@ -333,8 +335,7 @@ describe('CopilotCLITerminalIntegration', () => {
 				envService as unknown as IEnvService,
 				{ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), createSubLogger: () => ({}) } as unknown as ILogService,
 				telemetryService as unknown as ITelemetryService,
-				{ getConfig: () => true } as unknown as IConfigurationService,
-			);
+				{ getConfig: () => true } as unknown as IConfigurationService, { config: { enabled: false } } as any,);
 			disposables.add(freshIntegration);
 			await (freshIntegration as any).initialization;
 
@@ -410,8 +411,7 @@ describe('CopilotCLITerminalIntegration', () => {
 				envService as unknown as IEnvService,
 				{ trace: vi.fn(), debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), createSubLogger: () => ({}) } as unknown as ILogService,
 				telemetryService as unknown as ITelemetryService,
-				{ getConfig: () => true } as unknown as IConfigurationService,
-			);
+				{ getConfig: () => true } as unknown as IConfigurationService, { config: { enabled: false } } as any,);
 			disposables.add(freshIntegration);
 			await (freshIntegration as any).initialization;
 
